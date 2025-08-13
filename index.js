@@ -5,55 +5,31 @@
 */
 
 // import the JSON data about the crowd funded games from the games.js file
-import GAMES_DATA from './games.js';
+// index.js
+import GAMES_DATA from './games.js';          // must be type="module" in index.html
+const GAMES_JSON = JSON.parse(GAMES_DATA);    // GAMES_DATA is a JSON *string*
 
-// create a list of objects to store the data about the games using JSON.parse
-const GAMES_JSON = JSON.parse(GAMES_DATA)
+console.log('Loaded games:', GAMES_JSON.length); // should log 11
 
-// remove all child elements from a parent element in the DOM
-function deleteChildElements(parent) {
-    while (parent.firstChild) {
-        parent.removeChild(parent.firstChild);
-    }
-}
+const gamesContainer = document.getElementById('games-container');
 
-/*****************************************************************************
- * Challenge 3: Add data about each game as a card to the games-container
- * Skills used: DOM manipulation, for loops, template literals, functions
-*/
-
-// grab the element with the id games-container
-const gamesContainer = document.getElementById("games-container");
-
-// create a function that adds all data from the games array to the page
 function addGamesToPage(games) {
-
-    // loop over each item in the data
+  gamesContainer.innerHTML = '';
   for (const game of games) {
-        // create a new div element, which will become the game card
     const card = document.createElement('div');
-
-
-        // add the class game-card to the list
-    card.classList.add('game-card');
-
-        // set the inner HTML using a template literal to display some info 
-        // about each game
-        // TIP: if your images are not displaying, make sure there is space
-        // between the end of the src attribute and the end of the tag ("/>")
+    card.className = 'game-card';
     card.innerHTML = `
-      <img class="game-img" src="${game.img}" alt="${game.name} cover" />
+      <img class="game-img" src="${game.img}" alt="${game.name}" />
       <h3>${game.name}</h3>
       <p>${game.description}</p>
-      <p><strong>Pledged:</strong> $${game.pledged.toLocaleString()}</p>
-      <p><strong>Goal:</strong> $${game.goal.toLocaleString()}</p>
       <p><strong>Backers:</strong> ${game.backers.toLocaleString()}</p>
     `;
-
-        // append the game to the games-container
     gamesContainer.appendChild(card);
   }
 }
+
+addGamesToPage(GAMES_JSON);
+
 
 // call the function we just defined using the correct variable
 // later, we'll call this function using a different list of games
@@ -69,20 +45,22 @@ function addGamesToPage(games) {
 const contributionsCard = document.getElementById("num-contributions");
 
 // use reduce() to count the number of total contributions by summing the backers
-
-
+const totalContributions = GAMES_JSON.reduce((acc, game) => acc + game.backers, 0);
 // set the inner HTML using a template literal and toLocaleString to get a number with commas
+contributionsCard.innerText = totalContributions.toLocaleString('en-US');
 
 
 // grab the amount raised card, then use reduce() to find the total amount raised
 const raisedCard = document.getElementById("total-raised");
 
 // set inner HTML using template literal
+const totalRaised = GAMES_JSON.reduce((acc, game) => acc + game.pledged, 0);
+raisedCard.innerText = `$${totalRaised.toLocaleString('en-US')}`;
 
 
 // grab number of games card and set its inner HTML
-const gamesCard = document.getElementById("num-games");
-
+const gamesCard = document.getElementById('num-games');
+gamesCard.innerText = GAMES_JSON.length.toLocaleString('en-US');
 
 /*************************************************************************************
  * Challenge 5: Add functions to filter the funded and unfunded games
